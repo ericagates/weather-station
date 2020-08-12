@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<script type="text/javascript" src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+		<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+		<script type="text/javascript">
+			window.onload = function () {
+				var dataPoints = [];
+				var dataPoints2 = []; //added second arrray object to store humidity
+				$.getJSON("outputData.json", function(data) {
+					$.each(data, function(key, value){
+						$.each(value, function(key2, value2){//nested each to iterate through file
+							dataPoints.push({x: key2, y: parseFloat(value2['Temp'])});
+						});
+						$.each(value, function(key2, value2){
+							dataPoints2.push({x: key2, y: parseFloat(value2['Humidity'])});
+						});
+					});
+					var chart = new CanvasJS.Chart("chartContainer",{
+						title:{
+							text:"Plotting Temperature and Humidity"
+						},
+						axisX: { //add X-axis info
+							title: "Time Increment (30 minute increments)",
+							minimum: 0,
+						},
+						axisY: { //add Y-axis info to display
+							title: "Temperature (Farenheit)",
+							titleFontColor: "#4F81BC",
+							lineColor: "#4F81BC",
+							labelFontColor: "#4F81BC",
+							tickColor: "#4F81BC",
+							minimum: 20,
+							suffix: " °F"
+						},
+						axisY2: { //add second Y-axis info to display
+							title: "Humidity (%)",
+							titleFontColor: "#C0504E",
+							lineColor: "#C0504E",
+							labelFontColor: "#C0504E",
+							tickColor: "#C0504E",
+							minimum: 20,
+							suffix: " %"
+						},
+						toolTip: {
+							shared: true
+						},
+						data: [{ //add Temp data points
+							type: "spline",
+							name: "Temperature",
+							showInLegend: true,
+							dataPoints : dataPoints,
+						},
+						{ //add Humidity data points
+							type: "spline",
+							name: "Humidity",
+							axisYType: "secondary",
+							showInLegend: true,
+							dataPoints : dataPoints2,
+						}]
+					});
+					chart.render();
+				});
+			}
+		</script>
+
+	</head>
+	<body>
+		<div id="chartContainer" style="height: 300px; width: 100%;"></div>
+	</body>
+</html>
